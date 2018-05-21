@@ -8,7 +8,7 @@ TurnContext.getConversationReference(context.activity);
 
 This contains fields that uniquely identify a conversation, including `user.id`, `conversation.id`, and `channelId`.
 
-The core action in bot-to-human connections is the bot forwarding incoming messages to a human. We can continue a conversation with a previously stored `ConversationReference` using `continueConversation()` on a `BotAdapter`. For example, say we have two humans talking to the bot, each represented by a `ConversationReference`. On any given turn with one of the humans, if we want to send an activity to the other human, we can do this:
+The core action in bot-to-human connections is the bot forwarding incoming messages to a human. We can continue a conversation with a previously stored `ConversationReference` using `continueConversation()` on a `BotAdapter`. For example, say we have two humans talking to the bot, each represented by a `ConversationReference`. On any given turn with one of the humans, we can send an activity to the other human:
 
 ```ts
 const otherHumanRef: Partial<ConversationReference> = ... // stored previously
