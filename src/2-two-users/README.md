@@ -24,52 +24,47 @@ function areConversationReferencesEqual(ref1: Partial<ConversationReference> | n
 }
 ```
 
-If the user is new, we'll keep track of their `ConversationReference` unless we're already tracking two users. In that case, we'll reject the new user.
+In the bot logic, if the user is new, we'll keep track of their `ConversationReference` unless we're already tracking two users. In that case, we'll reject the new user.
+
+```ts
+const self = TurnContext.getConversationReference(context.activity);
+let isRef0 = areConversationReferencesEqual(self, refs[0]!);
+let isRef1 = areConversationReferencesEqual(self, refs[1]!);
+
+// If you're a new user...
+if (!isRef0 && !isRef1) {
+    // If there's room for you, add you
+    if (refs[0] === null) {
+        refs[0] = self;
+        isRef0 = true;
+    } else if (refs[1] === null) {
+        refs[1] = self;
+        isRef1 = true;
+    }
+
+    // Otherwise, reject you
+    else {
+        return context.sendActivity(`Go away, there are already 2 users`);
+    }
+}
+```
 
 If an already tracked user sends us a message, we'll try to forward it to the other tracked user unless we don't have another user yet. In that case, we'll let the user know that they're alone.
 
 ```ts
-function botLogic(context: TurnContext) {
-    // Only handle message activities
-    if (context.activity.type !== ActivityTypes.Message) return;
-
-    const self = TurnContext.getConversationReference(context.activity);
-    let isRef0 = areConversationReferencesEqual(self, refs[0]!);
-    let isRef1 = areConversationReferencesEqual(self, refs[1]!);
-
-    // If you're a new user...
-    if (!isRef0 && !isRef1) {
-        // If there's room for you, add you
-        if (refs[0] === null) {
-            refs[0] = self;
-            isRef0 = true;
-        } else if (refs[1] === null) {
-            refs[1] = self;
-            isRef1 = true;
-        }
-
-        // Otherwise, reject you
-        else {
-            return context.sendActivity(`Go away, there are already 2 users`);
-        }
+if (isRef0) {
+    // If there's a ref1, forward the message to ref1
+    if (refs[1]) {
+        return forwardTo(context, refs[1]!);
     }
 
-    // If you are ref0...
-    if (isRef0) {
-        // ...and there's a ref1, forward the message to ref1
-        if (refs[1]) {
-            return forwardTo(context, refs[1]!);
-        }
+    // Otherwise, you're the only user so far
+    return context.sendActivity(`You're the only user right now`);
+}
 
-        // Otherwise, you're the only user so far
-        return context.sendActivity(`You're the only user right now`);
-    }
-
-    // Or if you are ref1...
-    else if (isRef1) {
-        // There should already be a ref0, so forward the message to ref0
-        return forwardTo(context, refs[0]!);
-    }
+else if (isRef1) {
+    // There should already be a ref0, so forward the message to ref0
+    return forwardTo(context, refs[0]!);
 }
 ```
 
