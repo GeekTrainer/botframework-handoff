@@ -35,13 +35,13 @@ abstract class ConnectionManager {
         const conn = this.getConnection(ref);
         return conn !== undefined && conn.refs[0] !== undefined && conn.refs[1] !== undefined;
     };
-
+    
     // Returns whether the given ref is part of a waiting connection
     public isWaiting(ref: Partial<ConversationReference>): boolean {
         const conn = this.getConnection(ref);
         return conn !== undefined && (conn.refs[0] === undefined || conn.refs[1] === undefined);
     }
-
+    
     // Returns the ref to which the given ref is connected
     public connectedTo(ref: Partial<ConversationReference>): Partial<ConversationReference> | undefined {
         const conn = this.getConnection(ref);
@@ -134,7 +134,7 @@ export class TwoConnectionManager extends ConnectionManager {
 Then our bot logic becomes:
 
 ```ts
-const cm: TwoConnectionManager = new TwoConnectionManager();
+const conMan = new TwoConnectionManager();
 export async function botLogic(context: TurnContext) {
     // Only handle message activities
     if (context.activity.type !== ActivityTypes.Message) return;
@@ -142,29 +142,29 @@ export async function botLogic(context: TurnContext) {
     const ref = TurnContext.getConversationReference(context.activity);
 
     // If you're connected, forward your message
-    const otherRef = cm.connectedTo(ref);
+    const otherRef = conMan.connectedTo(ref);
     if (otherRef) {
         return forwardTo(context, otherRef);
     }
 
     // If you're waiting, you need to be patient
-    if (cm.isWaiting(ref)) {
+    if (conMan.isWaiting(ref)) {
         await context.sendActivity(`You are still waiting for someone`);
         return;
     }
 
     // You're new!
-    const pending = cm.getWaitingConnections();
+    const pending = conMan.getWaitingConnections();
     if (pending.length > 0) {
         // Found someone to pair you with
         const otherRef = pending[0].refs[0]!;
-        cm.completeConnection(otherRef, ref);
+        conMan.completeConnection(otherRef, ref);
         await sendTo(context, `You have been connected to someone who just joined`, otherRef);
         await context.sendActivity(`You have been connected to someone who was waiting`);
     } else {
         // No one to pair you with, so try to wait for someone
         try {
-            cm.startConnection(ref);
+            conMan.startConnection(ref);
             await context.sendActivity(`You are now waiting for someone`);
         } catch (e) {
             // startConnection() threw because there's already a connection

@@ -57,36 +57,36 @@ class PoolConnectionManager extends ConnectionManager {
 In the bot logic, we'll connect users in pairs as they come in. So the 1st user will connect with the 2nd user, the 3rd with the 4th, and so on. The bot logic is nearly identical to before. The only difference is that we no longer have to catch an exception when more than two users try to join.
 
 ```ts
-const cm = new PoolConnectionManager();
-export async function botLogic(context: TurnContext) {
+const conMan = new PoolConnectionManager();
+async function botLogic(context: TurnContext) {
     // Only handle message activities
     if (context.activity.type !== ActivityTypes.Message) return;
 
     const ref = TurnContext.getConversationReference(context.activity);
 
     // If you're connected, forward your message
-    const otherRef = cm.connectedTo(ref);
+    const otherRef = conMan.connectedTo(ref);
     if (otherRef) {
         return forwardTo(context, otherRef);
     }
 
     // If you're waiting, you need to be patient
-    if (cm.isWaiting(ref)) {
+    if (conMan.isWaiting(ref)) {
         await context.sendActivity(`You are still waiting for someone`);
         return;
     }
 
     // You're new!
-    const pending = cm.getWaitingConnections();
+    const pending = conMan.getWaitingConnections();
     if (pending.length > 0) {
         // Found someone to pair you with
         const otherRef = pending[0].refs[0]!;
-        cm.completeConnection(otherRef, ref);
+        conMan.completeConnection(otherRef, ref);
         await sendTo(context, `You have been connected to someone who just joined`, otherRef);
         await context.sendActivity(`You have been connected to someone who was waiting`);
     } else {
         // No one to pair you with, so you need to wait for someone
-        cm.startConnection(ref);
+        conMan.startConnection(ref);
         await context.sendActivity(`You are waiting for someone`);
     }
 }

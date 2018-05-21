@@ -29,7 +29,7 @@ When we receive a message, we'll immediately check if we're connected to someone
 
 ```ts
 const selfRef = TurnContext.getConversationReference(context.activity);
-const connectedTo = cm.connectedTo(selfRef);
+const connectedTo = conMan.connectedTo(selfRef);
 if (connectedTo) {
     return forwardTo(context, connectedTo);
 }
@@ -38,7 +38,7 @@ if (connectedTo) {
 Otherwise, we'll act based on the type of person we're talking to. If it's an agent, they can say "list" to see the waiting users:
 
 ```ts
-const pending = cm.getWaitingConnections();
+const pending = conMan.getWaitingConnections();
 if (context.activity.text === 'list') {
     const pendingStrs = pending.map(p => `${p.refs[0]!.user!.name} (${p.refs[0]!.user!.id})`);
     return context.sendActivity(pendingStrs.length > 0 ? pendingStrs.join('\n\n') : 'No users waiting');
@@ -53,7 +53,7 @@ else {
         return context.sendActivity(`No pending user with id ${context.activity.text}`);
     }
 
-    cm.completeConnection(conn.refs[0]!, selfRef);
+    conMan.completeConnection(conn.refs[0]!, selfRef);
 
     // Send message to both user and agent
     await sendTo(context, `You are connected to ${context.activity.from.name}`, conn.refs[0]!);
@@ -64,7 +64,7 @@ else {
 On the other hand, if we're talking to a user, we check if they want to talk to an agent:
 ```ts
 if (context.activity.text === 'agent') {
-    cm.startConnection(selfRef);
+    conMan.startConnection(selfRef);
     return context.sendActivity(`Waiting for an agent...`);
 }
 ```
