@@ -47,3 +47,5 @@ function botLogic(context: TurnContext) {
     return forwardTo(context, self);
 }
 ```
+
+Continue to [Part 2: Forwarding messages to *other* users](../2-two-users/)

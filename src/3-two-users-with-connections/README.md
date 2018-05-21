@@ -173,3 +173,5 @@ export async function botLogic(context: TurnContext) {
     }
 }
 ```
+
+Continue to [Part 4: Connections for a pool of users](../4-user-pool-with-connections/)

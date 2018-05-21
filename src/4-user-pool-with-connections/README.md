@@ -91,3 +91,5 @@ export async function botLogic(context: TurnContext) {
     }
 }
 ```
+
+Continue to [Part 5: Connect to agent sample](../5-simple-agent-sample/)

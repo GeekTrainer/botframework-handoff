@@ -74,3 +74,5 @@ function botLogic(context: TurnContext) {
 ```
 
 Storing `ConversationReference`s and continuing conversations are the building blocks necessary to achieve human-handoff scenarios. The following parts show additional abstractions or solutions to common problems in these scenarios.
+
+Continue to [Part 3: Connections](../3-two-users-with-connections/)
