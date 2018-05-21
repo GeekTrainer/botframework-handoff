@@ -1,0 +1,36 @@
+{
+  "name": "botframework-handoff",
+  "version": "0.0.1",
+  "description": "Bot Framework human handoff sample, based on routing module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GeekTrainer/botframework-handoff.git"
+  },
+  "keywords": [
+    "botbuilder",
+    "botframework",
+    "bots",
+    "chatbots",
+    "azure",
+    "routing",
+    "human",
+    "handoff"
+  ],
+  "author": "Microsoft Corp.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GeekTrainer/botframework-handoff/issues"
+  },
+  "homepage": "https://github.com/GeekTrainer/botframework-handoff#readme",
+  "dependencies": {
+    "botbuilder": "4.0.0-preview1.2",
+    "restify": "^7.1.1"
+  },
+  "devDependencies": {
+    "@types/restify": "^5.0.8"
+  }
+}
