@@ -1,7 +1,7 @@
 import { ActivityTypes, TurnContext } from 'botbuilder';
 import { PoolConnectionManager, forwardTo, sendTo } from './5-connectionManager';
 
-const conMan = new PoolConnectionManager();
+const connectionManager = new PoolConnectionManager();
 export async function botLogic(context: TurnContext) {
     // Welcome message when user or agent joins conversation
     if (context.activity.type === ActivityTypes.ConversationUpdate) {
@@ -20,14 +20,14 @@ export async function botLogic(context: TurnContext) {
 
     // If connected, forward activity
     const selfRef = TurnContext.getConversationReference(context.activity);
-    const connectedTo = conMan.connectedTo(selfRef);
+    const connectedTo = connectionManager.connectedTo(selfRef);
     if (connectedTo) {
         return forwardTo(context, connectedTo);
     }
 
     // Agent code
     if (isAgent(context)) {
-        const pending = conMan.getWaitingConnections();
+        const pending = connectionManager.getWaitingConnections();
 
         if (context.activity.text === 'list') {
             // Send agent a list of pending users
@@ -41,7 +41,7 @@ export async function botLogic(context: TurnContext) {
             }
 
             // Connect to the pending user
-            conMan.completeConnection(conn.refs[0], selfRef);
+            connectionManager.completeConnection(conn.refs[0], selfRef);
 
             // Send message to both user and agent
             await sendTo(context, `You are connected to ${context.activity.from.name}`, conn.refs[0]);
@@ -53,7 +53,7 @@ export async function botLogic(context: TurnContext) {
     else {
         if (context.activity.text === 'agent') {
             // Start waiting for an agent
-            conMan.startConnection(selfRef);
+            connectionManager.startConnection(selfRef);
             return context.sendActivity(`Waiting for an agent...`);
         } /*else if (context.activity.text === 'stop') {
             // Stop waiting for an agent
