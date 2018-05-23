@@ -1,7 +1,7 @@
 import { Activity, ConversationReference, TurnContext } from 'botbuilder';
 
 export interface Connection {
-    refs: [Partial<ConversationReference> | undefined, Partial<ConversationReference> | undefined];
+    refs: [Partial<ConversationReference>, Partial<ConversationReference> | undefined];
 }
 
 export abstract class ConnectionManager {
@@ -17,13 +17,13 @@ export abstract class ConnectionManager {
     // Returns whether the given ref is part of a connected connection
     public isConnected(ref: Partial<ConversationReference>): boolean {
         const conn = this.getConnection(ref);
-        return conn !== undefined && conn.refs[0] !== undefined && conn.refs[1] !== undefined;
+        return conn !== undefined && conn.refs[1] !== undefined;
     };
     
     // Returns whether the given ref is part of a waiting connection
     public isWaiting(ref: Partial<ConversationReference>): boolean {
         const conn = this.getConnection(ref);
-        return conn !== undefined && (conn.refs[0] === undefined || conn.refs[1] === undefined);
+        return conn !== undefined && conn.refs[1] === undefined;
     }
     
     // Returns the ref to which the given ref is connected

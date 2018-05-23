@@ -40,7 +40,7 @@ Otherwise, we'll act based on the type of person we're talking to. If it's an ag
 ```ts
 const pending = conMan.getWaitingConnections();
 if (context.activity.text === 'list') {
-    const pendingStrs = pending.map(p => `${p.refs[0]!.user!.name} (${p.refs[0]!.user!.id})`);
+    const pendingStrs = pending.map(p => `${p.refs[0].user!.name} (${p.refs[0].user!.id})`);
     return context.sendActivity(pendingStrs.length > 0 ? pendingStrs.join('\n\n') : 'No users waiting');
 }
 ```
@@ -48,16 +48,16 @@ if (context.activity.text === 'list') {
 Otherwise we assume the agent said the ID of a user they want to connect to:
 ```ts
 else {
-    const conn = pending.find(p => p.refs[0]!.user!.id === context.activity.text);
+    const conn = pending.find(p => p.refs[0].user!.id === context.activity.text);
     if (!conn) {
         return context.sendActivity(`No pending user with id ${context.activity.text}`);
     }
 
-    conMan.completeConnection(conn.refs[0]!, selfRef);
+    conMan.completeConnection(conn.refs[0], selfRef);
 
     // Send message to both user and agent
-    await sendTo(context, `You are connected to ${context.activity.from.name}`, conn.refs[0]!);
-    return context.sendActivity(`You are connected to ${conn.refs[0]!.user!.name}`);
+    await sendTo(context, `You are connected to ${context.activity.from.name}`, conn.refs[0]);
+    return context.sendActivity(`You are connected to ${conn.refs[0].user!.name}`);
 }
 ```
 

@@ -31,21 +31,21 @@ export async function botLogic(context: TurnContext) {
 
         if (context.activity.text === 'list') {
             // Send agent a list of pending users
-            const pendingStrs = pending.map(p => `${p.refs[0]!.user!.name} (${p.refs[0]!.user!.id})`);
+            const pendingStrs = pending.map(p => `${p.refs[0].user!.name} (${p.refs[0].user!.id})`);
             return context.sendActivity(pendingStrs.length > 0 ? pendingStrs.join('\n\n') : 'No users waiting');
         } else {
             // Assume the agent said a pending user's id. Find that user
-            const conn = pending.find(p => p.refs[0]!.user!.id === context.activity.text);
+            const conn = pending.find(p => p.refs[0].user!.id === context.activity.text);
             if (!conn) {
                 return context.sendActivity(`No pending user with id ${context.activity.text}`);
             }
 
             // Connect to the pending user
-            conMan.completeConnection(conn.refs[0]!, selfRef);
+            conMan.completeConnection(conn.refs[0], selfRef);
 
             // Send message to both user and agent
-            await sendTo(context, `You are connected to ${context.activity.from.name}`, conn.refs[0]!);
-            return context.sendActivity(`You are connected to ${conn.refs[0]!.user!.name}`);
+            await sendTo(context, `You are connected to ${context.activity.from.name}`, conn.refs[0]);
+            return context.sendActivity(`You are connected to ${conn.refs[0].user!.name}`);
         }
     }
 

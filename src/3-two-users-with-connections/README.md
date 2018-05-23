@@ -13,7 +13,7 @@ A connection is just a pair of `ConversationReference` objects:
 
 ```ts
 interface Connection {
-    refs: [Partial<ConversationReference> | undefined, Partial<ConversationReference> | undefined];
+    refs: [Partial<ConversationReference>, Partial<ConversationReference> | undefined];
 }
 ```
 
@@ -33,13 +33,13 @@ abstract class ConnectionManager {
     // Returns whether the given ref is part of a connected connection
     public isConnected(ref: Partial<ConversationReference>): boolean {
         const conn = this.getConnection(ref);
-        return conn !== undefined && conn.refs[0] !== undefined && conn.refs[1] !== undefined;
+        return conn !== undefined && conn.refs[1] !== undefined;
     };
     
     // Returns whether the given ref is part of a waiting connection
     public isWaiting(ref: Partial<ConversationReference>): boolean {
         const conn = this.getConnection(ref);
-        return conn !== undefined && (conn.refs[0] === undefined || conn.refs[1] === undefined);
+        return conn !== undefined && conn.refs[1] === undefined;
     }
     
     // Returns the ref to which the given ref is connected
@@ -71,7 +71,7 @@ abstract class ConnectionManager {
 Now we can implement a `ConnectionManager` for our previous example, accepting only two users and storing data in memory:
 
 ```ts
-export class TwoConnectionManager extends ConnectionManager {
+class TwoConnectionManager extends ConnectionManager {
     // Keep track of a single connection
     private connection: Connection | undefined = undefined;
 
@@ -157,7 +157,7 @@ export async function botLogic(context: TurnContext) {
     const pending = conMan.getWaitingConnections();
     if (pending.length > 0) {
         // Found someone to pair you with
-        const otherRef = pending[0].refs[0]!;
+        const otherRef = pending[0].refs[0];
         conMan.completeConnection(otherRef, ref);
         await sendTo(context, `You have been connected to someone who just joined`, otherRef);
         await context.sendActivity(`You have been connected to someone who was waiting`);

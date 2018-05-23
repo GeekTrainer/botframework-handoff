@@ -24,7 +24,7 @@ export async function botLogic(context: TurnContext) {
     const pending = conMan.getWaitingConnections();
     if (pending.length > 0) {
         // Found someone to pair you with
-        const otherRef = pending[0].refs[0]!;
+        const otherRef = pending[0].refs[0];
         conMan.completeConnection(otherRef, ref);
         await sendTo(context, `You have been connected to someone who just joined`, otherRef);
         await context.sendActivity(`You have been connected to someone who was waiting`);
