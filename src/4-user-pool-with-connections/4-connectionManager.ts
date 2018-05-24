@@ -10,9 +10,12 @@ export abstract class ConnectionManager {
 
     // Start a new (waiting) connection for the given ref
     public abstract startConnection(ref: Partial<ConversationReference>): void;
-    
+
     // Complete a connection that is already waiting
     public abstract completeConnection(waitingRef: Partial<ConversationReference>, newRef: Partial<ConversationReference>): void;
+
+    // Removes the connection that the given ref is part of
+    public abstract removeConnection(ref: Partial<ConversationReference>): void;
 
     // Returns whether the given ref is part of a connected connection
     public isConnected(ref: Partial<ConversationReference>): boolean {
@@ -83,17 +86,14 @@ export class PoolConnectionManager extends ConnectionManager {
         conn.refs[1] = newRef;
     }
 
-    // // Removes the connection that the given ref is part of
-    // // Returns whether it was successful
-    // public removeConnection(ref: Partial<ConversationReference>): void {
-    //     const i = this.connections.findIndex(c => this.areConversationReferencesEqual(ref, c.refs[0]) || this.areConversationReferencesEqual(ref, c.refs[1]));
-    //     if (i < 0) {
-    //         throw new Error('Connection does not exist');
-    //     }
+    public removeConnection(ref: Partial<ConversationReference>): void {
+        const i = this.connections.findIndex(c => this.areConversationReferencesEqual(ref, c.refs[0]) || this.areConversationReferencesEqual(ref, c.refs[1]));
+        if (i < 0) {
+            throw new Error(`Connection does not exist`);
+        }
 
-    //     this.connections.splice(i, 1);
-    // }
-
+        this.connections.splice(i, 1);
+    }
 
     // Returns the connection that the given ref is part of, or undefined if it isn't part of any connections
     protected getConnection(ref: Partial<ConversationReference>): Connection | undefined {

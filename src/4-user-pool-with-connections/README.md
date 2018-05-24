@@ -35,17 +35,14 @@ class PoolConnectionManager extends ConnectionManager {
         conn.refs[1] = newRef;
     }
 
-    // // Removes the connection that the given ref is part of
-    // // Returns whether it was successful
-    // public removeConnection(ref: Partial<ConversationReference>): void {
-    //     const i = this.connections.findIndex(c => this.areConversationReferencesEqual(ref, c.refs[0]) || this.areConversationReferencesEqual(ref, c.refs[1]));
-    //     if (i < 0) {
-    //         throw new Error('Connection does not exist');
-    //     }
+    public removeConnection(ref: Partial<ConversationReference>): void {
+        const i = this.connections.findIndex(c => this.areConversationReferencesEqual(ref, c.refs[0]) || this.areConversationReferencesEqual(ref, c.refs[1]));
+        if (i < 0) {
+            throw new Error(`Connection does not exist`);
+        }
 
-    //     this.connections.splice(i, 1);
-    // }
-
+        this.connections.splice(i, 1);
+    }
 
     // Returns the connection that the given ref is part of, or undefined if it isn't part of any connections
     protected getConnection(ref: Partial<ConversationReference>): Connection | undefined {
