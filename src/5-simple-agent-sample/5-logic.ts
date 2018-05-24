@@ -54,12 +54,12 @@ export async function botLogic(context: TurnContext) {
         if (context.activity.text === 'agent') {
             // Start waiting for an agent
             connectionManager.startConnection(selfRef);
-            return context.sendActivity(`Waiting for an agent...`);
-        } /*else if (context.activity.text === 'stop') {
+            return context.sendActivity(`Waiting for an agent... say 'stop' to stop waiting`);
+        } else if (context.activity.text === 'stop') {
             // Stop waiting for an agent
-            await connectHelper.endConnection(selfRef);
+            connectionManager.removeConnection(selfRef);
             return context.sendActivity(`Stopped waiting`);
-        }*/ else {
+        } else {
             // Echo bot
             return context.sendActivity(`You said: ${context.activity.text}`);
         }

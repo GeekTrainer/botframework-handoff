@@ -69,6 +69,14 @@ if (context.activity.text === 'agent') {
 }
 ```
 
+The user may want to stop waiting for an agent:
+```ts
+else if (context.activity.text === 'stop') {
+    connectionManager.removeConnection(selfRef);
+    return context.sendActivity(`Stopped waiting`);
+}
+```
+
 Otherwise we let them talk to the bot normally. This sample is just an echo bot:
 ```ts
 else {
