@@ -75,6 +75,7 @@ export class TwoConnectionManager extends ConnectionManager {
         }
 
         // Ensure ref isn't already part of a connection
+        // TODO: is this needed??
         if (this.getConnection(ref) !== undefined) {
             throw new Error('User already connected already exists');
         }
