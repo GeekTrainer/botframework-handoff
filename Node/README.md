@@ -1,4 +1,4 @@
-# botframework-handoff
+# Node
 
 - [Part 1: Building blocks](src/1-echo/)
 - [Part 2: Forwarding messages to *other* users](src/2-two-users/)
