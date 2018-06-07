@@ -25,7 +25,8 @@ We'll use this a lot, so let's wrap it in a function:
 private Task SendTo(ITurnContext context, IActivity activity, ConversationReference to)
 {
     string id = context.Services.Get<ClaimsIdentity>("BotIdentity").FindFirst(AuthenticationConstants.AudienceClaim).Value;
-    return context.Adapter.ContinueConversation(id, to, async (sendContext) => {
+    return context.Adapter.ContinueConversation(id, to, async (sendContext) =>
+    {
         await sendContext.SendActivity(activity);
     });
 }

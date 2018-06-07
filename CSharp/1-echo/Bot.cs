@@ -21,7 +21,8 @@ namespace botframework_routing_cs
         private Task SendTo(ITurnContext context, IActivity activity, ConversationReference to)
         {
             string id = context.Services.Get<ClaimsIdentity>("BotIdentity").FindFirst(AuthenticationConstants.AudienceClaim).Value;
-            return context.Adapter.ContinueConversation(id, to, async (sendContext) => {
+            return context.Adapter.ContinueConversation(id, to, async (sendContext) =>
+            {
                 await sendContext.SendActivity(activity);
             });
         }
