@@ -5,10 +5,7 @@ Forwarding messages to yourself isn't very useful. Let's forward messages betwee
 To achieve this, we'll keep track of the `ConversationReference` associated with the first two users:
 
 ```csharp
-static class Globals
-{
-    public static (ConversationReference Ref0, ConversationReference Ref1) References = (null, null);
-}
+static (ConversationReference Ref0, ConversationReference Ref1) References = (null, null);
 ```
 
 Note that we're storing the `ConversationReference`s in memory. This will not persist over a restart of the bot, nor will it scale if you have multiple instances running. For simplicity, we'll continue storing in memory, but in practice you'll likely want to use more persistent and scalable storage.
@@ -32,21 +29,21 @@ In the bot logic, if the user is new, we'll keep track of their `ConversationRef
 
 ```csharp
 ConversationReference self = TurnContext.GetConversationReference(context.Activity);
-bool isRef0 = AreConversationReferencesEqual(self, Globals.References.Ref0);
-bool isRef1 = AreConversationReferencesEqual(self, Globals.References.Ref1);
+bool isRef0 = AreConversationReferencesEqual(self, References.Ref0);
+bool isRef1 = AreConversationReferencesEqual(self, References.Ref1);
 
 // If you're a new user...
 if (!isRef0 && !isRef1)
 {
     // If there''s room for you, add you
-    if (Globals.References.Ref0 == null)
+    if (References.Ref0 == null)
     {
-        Globals.References.Ref0 = self;
+        References.Ref0 = self;
         isRef0 = true;
     }
-    else if (Globals.References.Ref1 == null)
+    else if (References.Ref1 == null)
     {
-        Globals.References.Ref1 = self;
+        References.Ref1 = self;
         isRef1 = true;
     }
 
@@ -64,9 +61,9 @@ If an already tracked user sends us a message, we'll try to forward it to the ot
 =if (isRef0)
 {
     // If there's a ref1, forward the message to ref1
-    if (Globals.References.Ref1 != null)
+    if (References.Ref1 != null)
     {
-        return ForwardTo(context, Globals.References.Ref1);
+        return ForwardTo(context, References.Ref1);
     }
 
     // Otherwise, you're the only user so far
@@ -76,7 +73,7 @@ If an already tracked user sends us a message, we'll try to forward it to the ot
 else if (isRef1)
 {
     // There should already be a ref0, so forward the message to ref0
-    return ForwardTo(context, Globals.References.Ref0);
+    return ForwardTo(context, References.Ref0);
 }
 ```
 

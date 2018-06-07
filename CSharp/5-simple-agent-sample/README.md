@@ -33,7 +33,7 @@ When we receive a message, we'll immediately check if we're connected to someone
 
 ```csharp
 ConversationReference self = TurnContext.GetConversationReference(context.Activity);
-ConversationReference connectedTo = Globals.connectionManager.ConnectedTo(self);
+ConversationReference connectedTo = connectionManager.ConnectedTo(self);
 if (connectedTo != null)
 {
     await ForwardTo(context, connectedTo);
@@ -44,7 +44,7 @@ if (connectedTo != null)
 Otherwise, we'll act based on the type of person we're talking to. If it's an agent, they can say "list" to see the waiting users:
 
 ```csharp
-IList<Connection> pending = Globals.connectionManager.GetWaitingConnections();
+IList<Connection> pending = connectionManager.GetWaitingConnections();
 
 if (context.Activity.Text == "list")
 {
@@ -66,7 +66,7 @@ else
         return;
     }
 
-    Globals.connectionManager.CompleteConnection(conn.References.Ref0, self);
+    connectionManager.CompleteConnection(conn.References.Ref0, self);
 
     // Send message to both user and agent
     await SendTo(context, $"You are connected to {context.Activity.From.Name}", conn.References.Ref0);
@@ -79,7 +79,7 @@ On the other hand, if we're talking to a user, we check if they want to talk to 
 ```csharp
 if (context.Activity.Text == "agent")
 {
-    Globals.connectionManager.StartConnection(self);
+    connectionManager.StartConnection(self);
     await context.SendActivity("Waiting for an agent... say 'stop' to stop waiting");
     return;
 }
@@ -89,7 +89,7 @@ The user may want to stop waiting for an agent:
 ```csharp
 else if (context.Activity.Text == "stop")
 {
-    Globals.connectionManager.RemoveConnection(self);
+    connectionManager.RemoveConnection(self);
     await context.SendActivity("Stopped waiting");
     return;
 }

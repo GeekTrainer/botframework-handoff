@@ -7,34 +7,31 @@ using Microsoft.Bot.Schema;
 
 namespace botframework_routing_cs
 {
-    static class Globals
-    {
-        public static (ConversationReference Ref0, ConversationReference Ref1) References = (null, null);
-    }
-
     public class Bot : IBot
     {
+        static (ConversationReference Ref0, ConversationReference Ref1) References = (null, null);
+
         public Task OnTurn(ITurnContext context)
         {
             // Only handle message activities
             if (context.Activity.Type != ActivityTypes.Message) return Task.CompletedTask;
 
             ConversationReference self = TurnContext.GetConversationReference(context.Activity);
-            bool isRef0 = AreConversationReferencesEqual(self, Globals.References.Ref0);
-            bool isRef1 = AreConversationReferencesEqual(self, Globals.References.Ref1);
+            bool isRef0 = AreConversationReferencesEqual(self, References.Ref0);
+            bool isRef1 = AreConversationReferencesEqual(self, References.Ref1);
 
             // If you're a new user...
             if (!isRef0 && !isRef1)
             {
                 // If there''s room for you, add you
-                if (Globals.References.Ref0 == null)
+                if (References.Ref0 == null)
                 {
-                    Globals.References.Ref0 = self;
+                    References.Ref0 = self;
                     isRef0 = true;
                 }
-                else if (Globals.References.Ref1 == null)
+                else if (References.Ref1 == null)
                 {
-                    Globals.References.Ref1 = self;
+                    References.Ref1 = self;
                     isRef1 = true;
                 }
 
@@ -49,9 +46,9 @@ namespace botframework_routing_cs
             if (isRef0)
             {
                 // ...and there's a ref1, forward the message to ref1
-                if (Globals.References.Ref1 != null)
+                if (References.Ref1 != null)
                 {
-                    return ForwardTo(context, Globals.References.Ref1);
+                    return ForwardTo(context, References.Ref1);
                 }
 
                  // Otherwise, you're the only user so far
@@ -62,7 +59,7 @@ namespace botframework_routing_cs
             else if (isRef1)
             {
                 // There should already be a ref0, so forward the message to ref0
-                return ForwardTo(context, Globals.References.Ref0);
+                return ForwardTo(context, References.Ref0);
             }
 
             return Task.CompletedTask;

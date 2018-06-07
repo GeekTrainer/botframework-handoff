@@ -66,12 +66,8 @@ class PoolConnectionManager : ConnectionManager
 In the bot logic, we'll connect users in pairs as they come in. So the 1st user will connect with the 2nd user, the 3rd with the 4th, and so on. The bot logic is nearly identical to before. The only difference is that we no longer have to catch an exception when more than two users try to join.
 
 ```csharp
-static class Globals
-{
-    public static ConnectionManager connectionManager = new PoolConnectionManager();
-}
-```
-```csharp
+static ConnectionManager connectionManager = new PoolConnectionManager();
+
 public async Task OnTurn(ITurnContext context)
 {
     // Only handle message activities
@@ -80,7 +76,7 @@ public async Task OnTurn(ITurnContext context)
     ConversationReference self = TurnContext.GetConversationReference(context.Activity);
 
     // If you're connected, forward your message
-    ConversationReference otherRef = Globals.connectionManager.ConnectedTo(self);
+    ConversationReference otherRef = connectionManager.ConnectedTo(self);
     if (otherRef != null)
     {
         await ForwardTo(context, otherRef);
@@ -88,26 +84,26 @@ public async Task OnTurn(ITurnContext context)
     }
 
     // If you're waiting, you need to be patient
-    if (Globals.connectionManager.IsWaiting(self))
+    if (connectionManager.IsWaiting(self))
     {
         await context.SendActivity("You are still waiting for someone");
         return;
     }
 
     // You're new!
-    IList<Connection> pending = Globals.connectionManager.GetWaitingConnections();
+    IList<Connection> pending = connectionManager.GetWaitingConnections();
     if (pending.Count > 0)
     {
         // Found someone to pair you with
         ConversationReference waitingRef = pending[0].References.Ref0;
-        Globals.connectionManager.CompleteConnection(waitingRef, self);
+        connectionManager.CompleteConnection(waitingRef, self);
         await SendTo(context, "You have been connected to someone who just joined", waitingRef);
         await context.SendActivity("You have been connected to someone who was waiting");
     }
     else
     {
         // No one to pair you with, so you need to wait for someone
-        Globals.connectionManager.StartConnection(self);
+        connectionManager.StartConnection(self);
         await context.SendActivity("You are now waiting for someone");
     }
 }

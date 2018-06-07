@@ -9,13 +9,10 @@ using Microsoft.Bot.Schema;
 
 namespace botframework_routing_cs
 {
-    static class Globals
-    {
-        public static ConnectionManager connectionManager = new PoolConnectionManager();
-    }
-
     public class Bot : IBot
     {
+        static ConnectionManager connectionManager = new PoolConnectionManager();
+
         public async Task OnTurn(ITurnContext context)
         {
             // Welcome message when user or agent joins conversation
@@ -39,7 +36,7 @@ namespace botframework_routing_cs
 
             // If connected, forward activity
             ConversationReference self = TurnContext.GetConversationReference(context.Activity);
-            ConversationReference connectedTo = Globals.connectionManager.ConnectedTo(self);
+            ConversationReference connectedTo = connectionManager.ConnectedTo(self);
             if (connectedTo != null)
             {
                 await ForwardTo(context, connectedTo);
@@ -49,7 +46,7 @@ namespace botframework_routing_cs
             // Agent code
             if (IsAgent(context))
             {
-                IList<Connection> pending = Globals.connectionManager.GetWaitingConnections();
+                IList<Connection> pending = connectionManager.GetWaitingConnections();
 
                 if (context.Activity.Text == "list")
                 {
@@ -70,7 +67,7 @@ namespace botframework_routing_cs
                     }
 
                     // Connect to the pending user
-                    Globals.connectionManager.CompleteConnection(conn.References.Ref0, self);
+                    connectionManager.CompleteConnection(conn.References.Ref0, self);
 
                     // Send message to both user and agent
                     await SendTo(context, $"You are connected to {context.Activity.From.Name}", conn.References.Ref0);
@@ -85,14 +82,14 @@ namespace botframework_routing_cs
                 if (context.Activity.Text == "agent")
                 {
                     // Start waiting for an agent
-                    Globals.connectionManager.StartConnection(self);
+                    connectionManager.StartConnection(self);
                     await context.SendActivity("Waiting for an agent... say 'stop' to stop waiting");
                     return;
                 }
                 else if (context.Activity.Text == "stop")
                 {
                     // Stop waiting for an agent
-                    Globals.connectionManager.RemoveConnection(self);
+                    connectionManager.RemoveConnection(self);
                     await context.SendActivity("Stopped waiting");
                     return;
                 }
