@@ -1,0 +1,14 @@
+{
+  "name": "5-simple-agent-sample",
+  "main": "./lib/5-app.js",
+  "scripts": {
+    "start": "node ./lib/5-app.js"
+  },
+  "dependencies": {
+    "botbuilder": "4.0.0-preview1.2",
+    "restify": "^7.1.1"
+  },
+  "devDependencies": {
+    "@types/restify": "^5.0.8"
+  }
+}
