@@ -13,6 +13,15 @@ The core action in bot-to-human connections is the bot forwarding incoming messa
 ```csharp
 ConversationReference otherHumanRef = ... // stored previously
 Activity activity = ... // any activity
+
+// NOTE: There's an issue that causes this to fail when using the emulator without registering the bot
+// In this case, set id to some non-empty string (for now)
+string id = context.Services.Get<ClaimsIdentity>("BotIdentity").FindFirst(AuthenticationConstants.AudienceClaim).Value;
+context.Adapter.ContinueConversation(id, otherHumanRef, async (sendContext) =>
+{
+    await sendContext.SendActivity(activity);
+});
+
 string id = context.Services.Get<ClaimsIdentity>("BotIdentity").FindFirst(AuthenticationConstants.AudienceClaim).Value;
 context.Adapter.ContinueConversation(id, otherHumanRef, async (sendContext) => {
     await sendContext.SendActivity(activity);

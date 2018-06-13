@@ -20,6 +20,8 @@ namespace botframework_routing_cs
 
         private Task SendTo(ITurnContext context, IActivity activity, ConversationReference to)
         {
+            // NOTE: There's an issue that causes this to fail when using the emulator without registering the bot
+            // In this case, set id to some non-empty string (for now)
             string id = context.Services.Get<ClaimsIdentity>("BotIdentity").FindFirst(AuthenticationConstants.AudienceClaim).Value;
             return context.Adapter.ContinueConversation(id, to, async (sendContext) =>
             {
